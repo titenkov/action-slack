@@ -1,0 +1,21 @@
+name: gh_action_slack
+description: Sends slack notifications
+author: titenkov
+branding:
+  icon: bell
+  color: yellow
+inputs:
+  status:
+    description: Job Status
+    required: true
+  title:
+    description: Title
+    required: false
+    default: ''
+  text:
+    description: Text
+    required: false
+    default: ''
+runs:
+  using: 'node16'
+  main: 'index.js'

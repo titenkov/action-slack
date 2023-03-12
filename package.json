@@ -1,0 +1,36 @@
+{
+  "name": "action-slack",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "format": "prettier . --write"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/titenkov/action-slack.git"
+  },
+  "keywords": [
+    "actions",
+    "slack",
+    "notifications",
+    "ci",
+    "monitoring"
+  ],
+  "author": "titenkov",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/titenkov/action-slack/issues"
+  },
+  "homepage": "https://github.com/titenkov/action-slack#readme",
+  "dependencies": {
+    "@actions/core": "^1.10.0",
+    "@actions/github": "^5.1.1",
+    "@slack/webhook": "^6.1.0"
+  },
+  "devDependencies": {
+    "@titenkov/prettier-config": "^1.0.0",
+    "prettier": "2.8.4"
+  },
+  "prettier": "@titenkov/prettier-config"
+}
