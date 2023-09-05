@@ -7,11 +7,11 @@
 
 GitHub Action to send slack notifications.
 
-![Screenshot](screenshot.png 'Screenshot')
+![Screenshot](screenshot-v2.png 'Screenshot')
 
 **Usage**:
 
-`- uses: titenkov/action-slack@v1`
+`- uses: titenkov/action-slack@v2`
 
 **Inputs**:
 
@@ -33,7 +33,7 @@ GitHub Action to send slack notifications.
       runs-on: ubuntu-latest
       steps:
 
-        - uses: titenkov/action-slack@v1
+        - uses: titenkov/action-slack@v2
           if: ${{ always() }}
           env:
             SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
