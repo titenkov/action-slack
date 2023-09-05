@@ -67,6 +67,7 @@ function getEnv() {
     commit: process.env.GITHUB_SHA.slice(0, 8),
     branch: process.env.GITHUB_HEAD_REF || process.env.GITHUB_REF.replace('refs/heads/', ''),
     actor: process.env.GITHUB_ACTOR,
+    eventPath: process.env.GITHUB_EVENT_PATH,
   }
 
   return env
@@ -115,24 +116,35 @@ try {
   const sender = getSender()
   const links = getLinks()
 
-  const statusText = getStatusText(status)
   const statusIcon = getStatusIcon(status)
-  const now = Math.round(new Date().getTime() / 1000)
+  const commitMessage = github.context.payload.head_commit 
+    ? github.context.payload.head_commit.message 
+    : ''
+
+  const details = commitMessage 
+    ? `>${commitMessage}\n>${links.commit} | By *${sender.name}* on \`${env.branch}\` | ${links.repository}`
+    : `>By *${sender.name}* on \`${env.branch}\` | ${links.repository}`
 
   const webhook = new IncomingWebhook(process.env.SLACK_WEBHOOK_URL)
   const message = {
-    attachments: [
+    blocks: [
       {
-        ts: now.toString(),
-        // color: getStatusColor(status),
-        // author_name: sender.name,
-        // author_link: sender.link,
-        // author_icon: sender.icon,
-        text: `${statusIcon} Job ${links.job}: ${statusText}`,
-        footer: `${links.repository} on ${links.branch} @ ${links.commit}`,
-        footer_icon: 'https://github.githubassets.com/favicon.ico',
+        type: 'section',
+        text: {
+          type: 'mrkdwn',
+          text: `${statusIcon} *${links.job}*`
+        }
       },
-    ],
+      {
+        type: 'context',
+        elements: [
+          {
+            type: 'mrkdwn',
+            text: details
+          }
+        ]
+      }
+    ]
   }
   ;(async () => {
     await webhook.send(message)
