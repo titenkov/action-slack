@@ -117,9 +117,10 @@ try {
   const links = getLinks()
 
   const statusIcon = getStatusIcon(status)
-  const commitMessage = github.context.payload.head_commit 
-    ? github.context.payload.head_commit.message 
-    : ''
+  const originalCommitMessage = github.context.payload.head_commit ? github.context.payload.head_commit.message 
+    : (github.context.payload.commits ? github.context.payload.commits[0].message : '')
+
+  const commitMessage = originalCommitMessage.length > 50 ? originalCommitMessage.substring(0, 50) + '...' : originalCommitMessage
 
   const details = commitMessage 
     ? `>${commitMessage}\n>${links.commit} | By *${sender.name}* on \`${env.branch}\` | ${links.repository}`
