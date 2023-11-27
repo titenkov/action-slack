@@ -117,8 +117,9 @@ try {
   const links = getLinks()
 
   const statusIcon = getStatusIcon(status)
+  
   const originalCommitMessage = github.context.payload.head_commit ? github.context.payload.head_commit.message 
-    : (github.context.payload.commits ? github.context.payload.commits[0].message : '')
+    : (github.context.payload.pull_request && github.context.payload.pull_request.head.label ? github.context.payload.pull_request.head.label : '')
 
   const commitMessage = originalCommitMessage.length > 50 ? originalCommitMessage.substring(0, 50) + '...' : originalCommitMessage
 
