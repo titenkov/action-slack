@@ -126,6 +126,11 @@ try {
     ? `>${commitMessage}\n>${links.commit} | By *${sender.name}* on \`${env.branch}\` | ${links.repository}`
     : `>By *${sender.name}* on \`${env.branch}\` | ${links.repository}`
 
+  if (!process.env.SLACK_WEBHOOK_URL) {
+    core.setFailed('Missing SLACK_WEBHOOK_URL environment variable')
+    return
+  }
+
   const webhook = new IncomingWebhook(process.env.SLACK_WEBHOOK_URL)
   const message = {
     blocks: [
