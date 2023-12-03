@@ -5,13 +5,13 @@
 ![License](https://img.shields.io/badge/license-mit-blue.svg?logo=open-source-initiative)
 [![Sponsor](https://img.shields.io/badge/sponsor-titenkov-blue.svg?logo=github-sponsors&style=social)](https://github.com/sponsors/titenkov)
 
-GitHub Action to send slack notifications.
+GitHub Action to send Slack notifications.
 
 ![Screenshot](screenshot-v2.png 'Screenshot')
 
 **Usage**:
 
-`- uses: titenkov/action-slack@v2`
+`- uses: titenkov/action-slack@v3`
 
 **Inputs**:
 
@@ -21,7 +21,7 @@ GitHub Action to send slack notifications.
 **Environment**:
 
 - **SLACK_WEBHOOK_URL**:
-  The URL of the Slack incloming webhook.
+  The URL of Slack incoming webhook.
 
 **Complete example**:
 
@@ -33,7 +33,7 @@ GitHub Action to send slack notifications.
       runs-on: ubuntu-latest
       steps:
 
-        - uses: titenkov/action-slack@v2
+        - uses: titenkov/action-slack@v3
           if: ${{ always() }}
           env:
             SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
@@ -42,5 +42,4 @@ GitHub Action to send slack notifications.
 ```
 
 ## License
-
-Project is released under the terms of the MIT License.
+The project is released under the terms of the MIT License.
