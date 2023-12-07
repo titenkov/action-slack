@@ -117,15 +117,23 @@ try {
   const links = getLinks()
 
   const statusIcon = getStatusIcon(status)
-  
-  const originalCommitMessage = github.context.payload.head_commit ? github.context.payload.head_commit.message 
-    : (github.context.payload.pull_request && github.context.payload.pull_request.head.label ? github.context.payload.pull_request.head.label : '')
 
-  const commitMessage = originalCommitMessage.length > 50 ? originalCommitMessage.substring(0, 50) + '...' : originalCommitMessage
+  const originalCommitMessage = github.context.payload.head_commit
+    ? github.context.payload.head_commit.message
+    : github.context.payload.pull_request && github.context.payload.pull_request.head.label
+    ? github.context.payload.pull_request.head.label
+    : ''
 
-  const details = commitMessage 
-    ? `>${commitMessage}\n>${links.commit} | By *${sender.name}* on \`${env.branch}\` | ${links.repository}`
-    : `>By *${sender.name}* on \`${env.branch}\` | ${links.repository}`
+  const newlineIndex = originalCommitMessage.indexOf('\n');
+
+  // Trim commit message to first line
+  let commitMessage = newlineIndex > -1 ? originalCommitMessage.substring(0, newlineIndex) : originalCommitMessage;
+  // Trim commit message to 50 characters
+  commitMessage = commitMessage.length >= 50 ? commitMessage.substring(0, 50) + '...' : commitMessage
+
+  const details = commitMessage
+    ? `>${commitMessage}\n>${links.commit} | By *${sender.name}* on \`${env.branch}\``
+    : `>By *${sender.name}* on \`${env.branch}\``
 
   if (!process.env.SLACK_WEBHOOK_URL) {
     core.setFailed('Missing SLACK_WEBHOOK_URL environment variable')
@@ -150,7 +158,16 @@ try {
             text: details
           }
         ]
-      }
+      },
+      {
+        type: 'context',
+        elements: [
+          {
+            type: 'mrkdwn',
+            text: `:slack: ${links.repository}`
+          }
+        ],
+      },
     ]
   }
   ;(async () => {
