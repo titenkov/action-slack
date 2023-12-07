@@ -1,5 +1,5 @@
-name: gh_action_slack
-description: Sends slack notifications
+name: action-slack - workflow status notifications in slack
+description: Sends slack notifications about the status of a workflow
 author: titenkov
 branding:
   icon: bell
