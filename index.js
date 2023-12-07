@@ -126,14 +126,16 @@ try {
 
   const newlineIndex = originalCommitMessage.indexOf('\n');
 
-  // Trim commit message to first line
+  // Truncate commit message to first line
   let commitMessage = newlineIndex > -1 ? originalCommitMessage.substring(0, newlineIndex) : originalCommitMessage;
-  // Trim commit message to 50 characters
+  // Truncate commit message to 50 characters
   commitMessage = commitMessage.length >= 50 ? commitMessage.substring(0, 50) + '...' : commitMessage
+  // Truncate branch name to 40 characters
+  branchName = env.branch.length >= 40 ? env.branch.substring(0, 40) + '...' : env.branch
 
   const details = commitMessage
-    ? `>${commitMessage}\n>${links.commit} | By *${sender.name}* on \`${env.branch}\``
-    : `>By *${sender.name}* on \`${env.branch}\``
+    ? `>${commitMessage}\n>${links.commit} | By *${sender.name}* on \`${branchName}\``
+    : `>By *${sender.name}* on \`${branchName}\``
 
   if (!process.env.SLACK_WEBHOOK_URL) {
     core.setFailed('Missing SLACK_WEBHOOK_URL environment variable')
