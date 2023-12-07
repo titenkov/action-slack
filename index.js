@@ -120,8 +120,8 @@ try {
 
   const originalCommitMessage = github.context.payload.head_commit
     ? github.context.payload.head_commit.message
-    : github.context.payload.pull_request && github.context.payload.pull_request.head.label
-    ? github.context.payload.pull_request.head.label
+    : github.context.payload.pull_request && github.context.payload.pull_request.title
+    ? github.context.payload.pull_request.title
     : ''
 
   const newlineIndex = originalCommitMessage.indexOf('\n');
