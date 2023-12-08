@@ -1,12 +1,15 @@
-name: test_v1
+name: ci
 on:
   workflow_dispatch:
+  push:
+    branches: 
+      - main
 
 jobs:
-  test:
+  ci:
     runs-on: ubuntu-latest
     steps:
-      - uses: titenkov/action-slack@v1
+      - uses: titenkov/action-slack@main
         if: ${{ always() }}
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
