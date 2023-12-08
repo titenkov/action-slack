@@ -1,17 +1,16 @@
 # action-slack
 
-[![Issues](http://img.shields.io/github/issues/titenkov/action-slack.svg?logo=github)](https://github.com/titenkov/action-slack/issues)
 ![Status](https://img.shields.io/badge/status-active-blue.svg?logo=git)
 ![License](https://img.shields.io/badge/license-mit-blue.svg?logo=open-source-initiative)
 [![Sponsor](https://img.shields.io/badge/sponsor-titenkov-blue.svg?logo=github-sponsors&style=social)](https://github.com/sponsors/titenkov)
 
-GitHub Action to send Slack notifications.
+Workflow status notifications in slack.
 
-![Screenshot](screenshot-v2.png 'Screenshot')
+![Screenshot](screenshot-v5.png 'Screenshot')
 
 **Usage**:
 
-`- uses: titenkov/action-slack@v3`
+`- uses: titenkov/action-slack@v5`
 
 **Inputs**:
 
@@ -25,7 +24,7 @@ GitHub Action to send Slack notifications.
 
 **Complete example**:
 
-```
+```yaml
   name: ci
   on: [push]
   jobs:
@@ -33,7 +32,7 @@ GitHub Action to send Slack notifications.
       runs-on: ubuntu-latest
       steps:
 
-        - uses: titenkov/action-slack@v3
+        - uses: titenkov/action-slack@v5
           if: ${{ always() }}
           env:
             SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
