@@ -85,9 +85,9 @@ function getSender() {
     case 'issue_comment':
     case 'pull_request':
     case 'push':
-      sender.name = github.context.payload.sender.login
-      sender.link = github.context.payload.sender.html_url
-      sender.icon = github.context.payload.sender.avatar_url
+      sender.name = github.context.payload.sender?.login
+      sender.link = github.context.payload.sender?.html_url
+      sender.icon = github.context.payload.sender?.avatar_url
       break
 
     default:
@@ -132,7 +132,8 @@ try {
   // Truncate branch name to 40 characters
   branchName = env.branch.length >= 40 ? env.branch.substring(0, 40) + '...' : env.branch
 
-  const text = commitMessage && sender.name ? `Workflow ${links.workflow} ${getStatusText(status)}\n>${commitMessage}\n>${links.commit} | By *${sender.name}* on \`${branchName}\`` : `Workflow ${links.workflow} ${getStatusText(status)}`;
+  const title = `Workflow ${links.workflow} ${getStatusText(status)}`;
+  const text = commitMessage && sender.name ? `${commitMessage}\n${links.commit} | By *${sender.name}* on \`${branchName}\`` : '';
 
   if (!process.env.SLACK_WEBHOOK_URL) {
     core.setFailed('Missing SLACK_WEBHOOK_URL environment variable')
@@ -144,7 +145,13 @@ try {
     attachments: [
       {
         "color": getStatusColor(status),
-        "text": text,
+        "text": title,
+        "attachments": [
+          {
+            "text": text,
+            "mrkdwn_in": ["text"],
+          }
+        ],
         "footer": `${links.job} | ${links.repository} | powered by <https://github.com/titenkov/action-slack|action-slack>`,
         "footer_icon": "https://slack.github.com/static/img/favicon-neutral.png",
       }
