@@ -35,9 +35,9 @@ function getStatusColor(status) {
 }
 
 function getStatusIcon(status) {
-  if (status.toLowerCase() === 'success') return '🟢'
-  if (status.toLowerCase() === 'failure') return '🔴'
-  if (status.toLowerCase() === 'cancelled') return '🟡'
+  if (status.toLowerCase() === 'success') return '✅'
+  if (status.toLowerCase() === 'failure') return '❌'
+  if (status.toLowerCase() === 'cancelled') return '⚠️'
 
   return '🟡'
 }
@@ -102,12 +102,11 @@ function getLinks() {
   const sender = getSender()
 
   const links = {
-    job: `<${env.workflowUrl}|${env.job}#${env.runNumber}>`,
-    workflowFull: `<${env.workflowUrl}|#${env.runNumber} ${env.workflow} / ${env.job}>`,
-    workflowShort: `<${env.workflowUrl}|${env.workflow} #${env.runNumber}>`,
+    job: `<${env.workflowUrl}|${env.workflow} #${env.runNumber} / ${env.job}>`,
+    workflow: `<${env.workflowUrl}|${env.workflow} #${env.runNumber}>`,
     repository: `<${env.repositoryURL}|${env.repository}>`,
     branch: `<${env.repositoryURL}/tree/${env.branch}|${env.branch}>`,
-    commit: `<${env.repositoryURL}/commit/${env.commit}|${env.commit} (${env.branch})>`,
+    commit: `<${env.repositoryURL}/commit/${env.commit}|${env.commit}>`,
   }
 
   if (sender.name && sender.link) {
@@ -121,7 +120,6 @@ try {
   const status = core.getInput('status')
 
   const env = getEnv()
-  const sender = getSender()
   const links = getLinks()
 
   const originalCommitMessage = github.context.payload.head_commit
@@ -132,40 +130,26 @@ try {
 
   const newlineIndex = originalCommitMessage.indexOf('\n');
 
-  // Truncate commit message to first line
-  let commitMessage = newlineIndex > -1 ? originalCommitMessage.substring(0, newlineIndex) : originalCommitMessage;
-  // Truncate commit message to 50 characters
-  commitMessage = commitMessage.length >= 50 ? commitMessage.substring(0, 50) + '...' : commitMessage
+  // Truncate commit message to first line and then to 50 characters
+  const commitMessage = originalCommitMessage.split('\n')[0].substring(0, 50) + (originalCommitMessage.length > 50 ? '...' : '');
   // Truncate branch name to 40 characters
-  branchName = env.branch.length >= 40 ? env.branch.substring(0, 40) + '...' : env.branch
+  const branchName = env.branch.length > 40 ? env.branch.substring(0, 40) + '...' : env.branch;
 
-  const pretext = links.author ? `Workflow ${links.workflowShort} ${getStatusText(status)} by ${links.author}` : `Workflow ${links.workflowShort} ${getStatusText(status)}`
+  const pretext = `Workflow ${links.workflow} ${getStatusText(status)}`;
+  const text = links.author && commitMessage
+    ? `\`\`\`${commitMessage}\n${links.commit} | By ${links.author} on ${branchName}\`\`\``
+    : '';
 
-  const text = commitMessage ? `\`${commitMessage}\`` : ''
+  let fields = [];
 
-  const fields = commitMessage && links.author
-    ? [
-        {
-          title: "Workflow",
-          value: links.workflowFull,
-        },
-        {
-          title: "Commit",
-          value: links.commit,
-          short: true,
-        },
-        {
-          title: "Author",
-          value: links.author,
-          short: true,
-        },
+  if (!text) {
+    fields = links.author
+      ? [
+        { title: "Workflow", value: links.workflow, short: true },
+        { title: "Author", value: links.author, short: true },
       ]
-    : [
-        {
-          title: "Workflow",
-          value: links.workflowFull,
-        },
-      ];
+      : [{ title: "Workflow", value: links.workflow, short: false }];
+  }
 
   if (!process.env.SLACK_WEBHOOK_URL) {
     core.setFailed('Missing SLACK_WEBHOOK_URL environment variable')
