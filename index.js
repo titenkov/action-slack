@@ -27,9 +27,9 @@ const github = require('@actions/github')
 const { IncomingWebhook } = require('@slack/webhook')
 
 function getStatusColor(status) {
-  if (status.toLowerCase() === 'success') return 'good'
-  if (status.toLowerCase() === 'failure') return 'danger'
-  if (status.toLowerCase() === 'cancelled') return 'warning'
+  if (status.toLowerCase() === 'success') return '#2cbe4e'
+  if (status.toLowerCase() === 'failure') return '#cb2431'
+  if (status.toLowerCase() === 'cancelled') return '#ffc107'
 
   return 'warning'
 }
@@ -43,9 +43,9 @@ function getStatusIcon(status) {
 }
 
 function getStatusText(status) {
-  if (status.toLowerCase() === 'success') return 'Success'
-  if (status.toLowerCase() === 'failure') return 'Failure'
-  if (status.toLowerCase() === 'cancelled') return 'Cancelled'
+  if (status.toLowerCase() === 'success') return 'completed'
+  if (status.toLowerCase() === 'failure') return 'failed'
+  if (status.toLowerCase() === 'cancelled') return 'cancelled'
 
   return 'Unknown'
 }
@@ -101,6 +101,7 @@ function getLinks() {
   const env = getEnv()
   const links = {
     job: `<${env.workflowUrl}|${env.job}#${env.runNumber}>`,
+    workflow: `<${env.workflowUrl}|${env.workflow}#${env.runNumber}>`,
     repository: `<${env.repositoryURL}|${env.repository}>`,
     branch: `<${env.repositoryURL}/tree/${env.branch}|${env.branch}>`,
     commit: `<${env.repositoryURL}/commit/${env.commit}|${env.commit}>`,
@@ -115,8 +116,6 @@ try {
   const env = getEnv()
   const sender = getSender()
   const links = getLinks()
-
-  const statusIcon = getStatusIcon(status)
 
   const originalCommitMessage = github.context.payload.head_commit
     ? github.context.payload.head_commit.message
@@ -133,9 +132,7 @@ try {
   // Truncate branch name to 40 characters
   branchName = env.branch.length >= 40 ? env.branch.substring(0, 40) + '...' : env.branch
 
-  const details = commitMessage
-    ? `>${commitMessage}\n>${links.commit} | By *${sender.name}* on \`${branchName}\``
-    : `>By *${sender.name}* on \`${branchName}\``
+  const text = commitMessage && sender.name ? `${commitMessage}\n${links.commit} | By *${sender.name}* on \`${branchName}\`` : `Workflow ${links.workflow} ${getStatusText(status)}`;
 
   if (!process.env.SLACK_WEBHOOK_URL) {
     core.setFailed('Missing SLACK_WEBHOOK_URL environment variable')
@@ -144,32 +141,13 @@ try {
 
   const webhook = new IncomingWebhook(process.env.SLACK_WEBHOOK_URL)
   const message = {
-    blocks: [
+    attachments: [
       {
-        type: 'section',
-        text: {
-          type: 'mrkdwn',
-          text: `${statusIcon} *${links.job}*`
-        }
-      },
-      {
-        type: 'context',
-        elements: [
-          {
-            type: 'mrkdwn',
-            text: details
-          }
-        ]
-      },
-      {
-        type: 'context',
-        elements: [
-          {
-            type: 'mrkdwn',
-            text: `:slack: ${links.repository}`
-          }
-        ],
-      },
+        "color": getStatusColor(status),
+        "text": text,
+        "footer": `${links.job} | ${links.repository} | powered by <https://github.com/titenkov/action-slack|action-slack>`,
+        "footer_icon": "https://slack.github.com/static/img/favicon-neutral.png",
+      }
     ]
   }
   ;(async () => {
