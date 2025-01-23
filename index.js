@@ -99,12 +99,19 @@ function getSender() {
 
 function getLinks() {
   const env = getEnv()
+  const sender = getSender()
+
   const links = {
     job: `<${env.workflowUrl}|${env.job}#${env.runNumber}>`,
-    workflow: `<${env.workflowUrl}|${env.workflow}#${env.runNumber}>`,
+    workflowFull: `<${env.workflowUrl}|#${env.runNumber} ${env.workflow} / ${env.job}>`,
+    workflowShort: `<${env.workflowUrl}|${env.workflow} #${env.runNumber}>`,
     repository: `<${env.repositoryURL}|${env.repository}>`,
     branch: `<${env.repositoryURL}/tree/${env.branch}|${env.branch}>`,
-    commit: `<${env.repositoryURL}/commit/${env.commit}|${env.commit}>`,
+    commit: `<${env.repositoryURL}/commit/${env.commit}|${env.commit} (${env.branch})>`,
+  }
+
+  if (sender.name && sender.link) {
+    links.author = `<${sender.link}|${sender.name}>`
   }
 
   return links
@@ -132,9 +139,33 @@ try {
   // Truncate branch name to 40 characters
   branchName = env.branch.length >= 40 ? env.branch.substring(0, 40) + '...' : env.branch
 
-  const text = commitMessage && sender.name 
-    ? `Workflow ${links.workflow} ${getStatusText(status)}\n\`${commitMessage}\`\n${links.commit} | By *${sender.name}* on ${links.branch}` 
-    : `Workflow ${links.workflow} ${getStatusText(status)}`;
+  const pretext = links.author ? `Workflow ${links.workflowShort} ${getStatusText(status)} by ${links.author}` : `Workflow ${links.workflowShort} ${getStatusText(status)}`
+
+  const text = commitMessage ? `\`${commitMessage}\`` : ''
+
+  const fields = commitMessage && links.author
+    ? [
+        {
+          title: "Workflow",
+          value: links.workflowFull,
+        },
+        {
+          title: "Commit",
+          value: links.commit,
+          short: true,
+        },
+        {
+          title: "Author",
+          value: links.author,
+          short: true,
+        },
+      ]
+    : [
+        {
+          title: "Workflow",
+          value: links.workflowFull,
+        },
+      ];
 
   if (!process.env.SLACK_WEBHOOK_URL) {
     core.setFailed('Missing SLACK_WEBHOOK_URL environment variable')
@@ -146,9 +177,11 @@ try {
     attachments: [
       {
         "color": getStatusColor(status),
+        "pretext": pretext,
         "text": text,
         "mrkdwn_in": ["text"],
-        "footer": `${links.job} | ${links.repository} | powered by <https://github.com/titenkov/action-slack|action-slack>`,
+        "fields": fields,
+        "footer": `${links.repository} | powered by <https://github.com/titenkov/action-slack|action-slack>`,
         "footer_icon": "https://slack.github.com/static/img/favicon-neutral.png",
       }
     ]
