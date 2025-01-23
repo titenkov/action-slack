@@ -6,11 +6,11 @@
 
 Workflow status notifications in slack.
 
-![Screenshot](screenshot-v5.png 'Screenshot')
+![Screenshot](screenshot-v6.png 'Screenshot')
 
 **Usage**:
 
-`- uses: titenkov/action-slack@v5`
+`- uses: titenkov/action-slack@v6`
 
 **Inputs**:
 
@@ -32,7 +32,7 @@ Workflow status notifications in slack.
       runs-on: ubuntu-latest
       steps:
 
-        - uses: titenkov/action-slack@v5
+        - uses: titenkov/action-slack@v6
           if: ${{ always() }}
           env:
             SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
