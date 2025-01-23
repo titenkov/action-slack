@@ -132,7 +132,7 @@ try {
   // Truncate branch name to 40 characters
   branchName = env.branch.length >= 40 ? env.branch.substring(0, 40) + '...' : env.branch
 
-  const text = commitMessage && sender.name ? `${commitMessage}\n${links.commit} | By *${sender.name}* on \`${branchName}\`` : `Workflow ${links.workflow} ${getStatusText(status)}`;
+  const text = commitMessage && sender.name ? `Workflow ${links.workflow} ${getStatusText(status)}\n>${commitMessage}\n>${links.commit} | By *${sender.name}* on \`${branchName}\`` : `Workflow ${links.workflow} ${getStatusText(status)}`;
 
   if (!process.env.SLACK_WEBHOOK_URL) {
     core.setFailed('Missing SLACK_WEBHOOK_URL environment variable')
