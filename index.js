@@ -132,8 +132,9 @@ try {
   // Truncate branch name to 40 characters
   branchName = env.branch.length >= 40 ? env.branch.substring(0, 40) + '...' : env.branch
 
-  const title = `Workflow ${links.workflow} ${getStatusText(status)}`;
-  const text = commitMessage && sender.name ? `${commitMessage}\n${links.commit} | By *${sender.name}* on \`${branchName}\`` : '';
+  const text = commitMessage && sender.name 
+    ? `Workflow ${links.workflow} ${getStatusText(status)}\n\`${commitMessage}\`\n${links.commit} | By *${sender.name}* on ${links.branch}` 
+    : `Workflow ${links.workflow} ${getStatusText(status)}`;
 
   if (!process.env.SLACK_WEBHOOK_URL) {
     core.setFailed('Missing SLACK_WEBHOOK_URL environment variable')
@@ -145,13 +146,8 @@ try {
     attachments: [
       {
         "color": getStatusColor(status),
-        "text": title,
-        "attachments": [
-          {
-            "text": text,
-            "mrkdwn_in": ["text"],
-          }
-        ],
+        "text": text,
+        "mrkdwn_in": ["text"],
         "footer": `${links.job} | ${links.repository} | powered by <https://github.com/titenkov/action-slack|action-slack>`,
         "footer_icon": "https://slack.github.com/static/img/favicon-neutral.png",
       }
