@@ -138,7 +138,7 @@ try {
 
   const pretext = links.author && commitMessage ? `Workflow ${links.workflow} ${getStatusText(status)}` : '';
   const text = links.author && commitMessage
-    ? `\`${links.commit}\` - ${commitMessage}\nby ${links.author} on ${branchName}`
+    ? `\`${links.commit}\` - ${commitMessage}\n🧑‍💻 ${links.author} on ${links.branch}`
     : `Workflow ${links.workflow} ${getStatusText(status)}`;
 
   if (!process.env.SLACK_WEBHOOK_URL) {
