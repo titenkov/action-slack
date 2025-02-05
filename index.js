@@ -111,6 +111,7 @@ function getLinks() {
 
   if (sender.name && sender.link) {
     links.author = `<${sender.link}|${sender.name}>`
+    links.author_icon = `${sender.link}.png?size=32`
   }
 
   return links
@@ -118,7 +119,6 @@ function getLinks() {
 
 try {
   const status = core.getInput('status')
-  const compact = core.getInput('compact') === 'true'
 
   const env = getEnv()
   const links = getLinks()
@@ -136,21 +136,10 @@ try {
   // Truncate branch name to 40 characters
   const branchName = env.branch.length > 40 ? env.branch.substring(0, 40) + '...' : env.branch;
 
-  const pretext = `Workflow ${links.workflow} ${getStatusText(status)}`;
+  const pretext = links.author && commitMessage ? `Workflow ${links.workflow} ${getStatusText(status)}` : '';
   const text = links.author && commitMessage
-    ? `${commitMessage}\n${links.commit} | By ${links.author} on ${branchName}`
-    : '';
-
-  let fields = [];
-
-  if (!text) {
-    fields = links.author
-      ? [
-        { title: "Workflow", value: links.workflow, short: true },
-        { title: "Author", value: links.author, short: true },
-      ]
-      : [{ title: "Workflow", value: links.workflow, short: false }];
-  }
+    ? `\`${links.commit}\` - ${commitMessage}\nby ${links.author} on ${branchName}`
+    : `Workflow ${links.workflow} ${getStatusText(status)}`;
 
   if (!process.env.SLACK_WEBHOOK_URL) {
     core.setFailed('Missing SLACK_WEBHOOK_URL environment variable')
@@ -162,8 +151,8 @@ try {
     attachments: [
       {
         "color": getStatusColor(status),
-        "text": `${pretext}\n${text}`,
-        "fields": compact ? [] : fields,
+        "pretext": pretext,
+        "text": text,
         "footer": `${links.repository} | powered by <https://github.com/titenkov/action-slack|action-slack>`,
         "footer_icon": "https://slack.github.com/static/img/favicon-neutral.png",
       }
