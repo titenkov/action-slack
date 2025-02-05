@@ -101,11 +101,14 @@ function getLinks() {
   const env = getEnv()
   const sender = getSender()
 
+  // Truncate branch name to 40 characters
+  const branchName = env.branch.length > 40 ? env.branch.substring(0, 40) + '...' : env.branch;
+
   const links = {
     job: `<${env.workflowUrl}|${env.workflow} #${env.runNumber} / ${env.job}>`,
     workflow: `<${env.workflowUrl}|${env.workflow} #${env.runNumber}>`,
     repository: `<${env.repositoryURL}|${env.repository}>`,
-    branch: `<${env.repositoryURL}/tree/${env.branch}|${env.branch}>`,
+    branch: `<${env.repositoryURL}/tree/${env.branch}|${branchName}>`,
     commit: `<${env.repositoryURL}/commit/${env.commit}|${env.commit}>`,
   }
 
@@ -129,12 +132,8 @@ try {
     ? github.context.payload.pull_request.title
     : ''
 
-  const newlineIndex = originalCommitMessage.indexOf('\n');
-
   // Truncate commit message to first line and then to 50 characters
   const commitMessage = originalCommitMessage.split('\n')[0].substring(0, 50) + (originalCommitMessage.length > 50 ? '...' : '');
-  // Truncate branch name to 40 characters
-  const branchName = env.branch.length > 40 ? env.branch.substring(0, 40) + '...' : env.branch;
 
   const pretext = links.author && commitMessage ? `Workflow ${links.workflow} ${getStatusText(status)}` : '';
   const text = links.author && commitMessage
