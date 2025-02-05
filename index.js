@@ -118,6 +118,7 @@ function getLinks() {
 
 try {
   const status = core.getInput('status')
+  const compact = core.getInput('compact') === 'true'
 
   const env = getEnv()
   const links = getLinks()
@@ -137,7 +138,7 @@ try {
 
   const pretext = `Workflow ${links.workflow} ${getStatusText(status)}`;
   const text = links.author && commitMessage
-    ? `\`\`\`${commitMessage}\n${links.commit} | By ${links.author} on ${branchName}\`\`\``
+    ? `${commitMessage}\n${links.commit} | By ${links.author} on ${branchName}`
     : '';
 
   let fields = [];
@@ -161,10 +162,8 @@ try {
     attachments: [
       {
         "color": getStatusColor(status),
-        "pretext": pretext,
-        "text": text,
-        "mrkdwn_in": ["text"],
-        "fields": fields,
+        "text": `${pretext}\n${text}`,
+        "fields": compact ? [] : fields,
         "footer": `${links.repository} | powered by <https://github.com/titenkov/action-slack|action-slack>`,
         "footer_icon": "https://slack.github.com/static/img/favicon-neutral.png",
       }

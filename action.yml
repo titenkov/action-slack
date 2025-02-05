@@ -16,6 +16,10 @@ inputs:
     description: Text
     required: false
     default: ''
+  compact:
+    description: Compact mode
+    required: false
+    default: 'true'
 runs:
   using: 'node20'
   main: 'index.js'
