@@ -30,7 +30,7 @@
   },
   "devDependencies": {
     "@titenkov/prettier-config": "^1.0.0",
-    "prettier": "3.7.2"
+    "prettier": "3.7.3"
   },
   "prettier": "@titenkov/prettier-config"
 }
