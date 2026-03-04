@@ -15,9 +15,6 @@ After each change, ensure linters and tests pass. Do not move on with a broken b
 ## No speculative work
 Do not add features, error handling, configurability, or polish that was not asked for. Build exactly what is needed, nothing more.
 
-## Delete over commenting out
-Remove dead code entirely. Do not leave commented-out blocks or `// TODO: remove` markers behind.
-
 ## Read before modifying
 Understand existing code before changing it. Read the relevant files first to avoid breaking implicit contracts or introducing inconsistencies.
 
