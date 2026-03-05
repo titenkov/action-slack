@@ -32,3 +32,6 @@ Trust internal code and framework guarantees. Validate at user input and externa
 
 ## Propose before implementing improvements
 If you notice something worth improving beyond the current task, flag it as a suggestion rather than doing it silently. Let the user decide.
+
+## AI session logs
+After any non-trivial session, create a log in `.ai/archive/YYYY-MM-DD-<type>-<short-name>.md` capturing what changed, why, and context for future work. Types: `feature`, `fix`, `refactor`, `setup`. Skip for typo fixes and one-liners.

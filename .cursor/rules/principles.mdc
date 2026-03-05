@@ -1,3 +1,8 @@
+---
+description: Core engineering principles for this project
+globs:
+alwaysApply: true
+---
 # Principles
 
 ## Simplicity first
@@ -22,7 +27,7 @@ Understand existing code before changing it. Read the relevant files first to av
 When conventions already exist in the codebase, follow them. Do not introduce a second style or a competing abstraction pattern.
 
 ## Prefer explicit over implicit
-Code should make intent obvious without needing comments. Avoid magic, clever shortcuts, or side effects that aren't visible at the call site.
+Code should make intent obvious without needing comments. Avoid magic, clever shortcuts, or side effects that are not visible at the call site.
 
 ## One concern per unit
 Functions and modules should do one thing. If a name needs "and", it is a signal to split.
